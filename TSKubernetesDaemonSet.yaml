@@ -1,0 +1,54 @@
+apiVersion: apps/v1 
+kind: DaemonSet 
+metadata: 
+   name: threatstack-agent 
+spec: 
+   selector: 
+      matchLabels: 
+         name: "threatstack-agent" 
+   template: 
+      metadata: 
+         labels: 
+            name: "threatstack-agent" 
+         name: threatstack-agent 
+      spec: 
+         hostNetwork: true 
+         hostPID: true 
+         containers: 
+         - image: threatstack/ts-docker:latest 
+           imagePullPolicy: Always 
+           name: threatstack-agent 
+           env: 
+             - name: THREATSTACK_CONFIG_PATH 
+               value: /tmp/ts-config/ts-config 
+           securityContext: 
+             privileged: true 
+             capabilities: 
+               add: ["AUDIT_CONTROL", "AUDIT_READ", "NET_ADMIN", "SYS_ADMIN"] 
+           resources: 
+               requests: 
+                  memory: "256Mi" 
+                  cpu: "200m" 
+               limits: 
+                  memory: "256Mi" 
+                  cpu: "200m" 
+           volumeMounts: 
+                  - name: dockersocket 
+                    mountPath: /var/run/docker.sock 
+                  - name: hostfs 
+                    mountPath: /threatstackfs 
+                  - name: ts-config 
+                    mountPath: /threatstackfs/tmp/ts-config 
+      volumes: 
+         - name: ts-config 
+           configMap: 
+             name: ts-config 
+             items: 
+                - key: ts-config 
+                  path: ts-config 
+         - hostPath: 
+             path: /var/run/docker.sock 
+         name: dockersocket 
+         - hostPath: 
+             path: / 
+         name: hostfs
