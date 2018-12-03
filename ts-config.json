@@ -1,7 +1,7 @@
 {
    "deploy-key": "<your deploy key>",
    "agent_type": "i",
-   "ruleset": "Base Rule Set, Docker Rule Set",
+   "ruleset": "Base Rule Set, Docker Rule Set,Kubernetes Rule Set",
    "configuration":
    {
       "enable_containers":1,
