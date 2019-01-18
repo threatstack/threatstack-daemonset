@@ -15,16 +15,18 @@ spec:
       hostNetwork: true
       hostPID: true
       containers:
-      - image: threatstack/ts-docker:1.8.0C
+      - image: threatstack/ts-docker2:latest
         imagePullPolicy: Always
         name: threatstack-agent
         env:
-          - name: THREATSTACK_CONFIG_PATH
-            value: /tmp/ts-config/ts-config.json
+          - name: THREATSTACK_SETUP_ARGS
+            value:  "-deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> -ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
+          - name: THREATSTACK_CONFIG_ARGS
+            value: "enable_kubes 1 enable_containers 1"
         securityContext:
-          privileged: true
+          privileged: false
           capabilities:
-            add: ["AUDIT_CONTROL", "AUDIT_READ", "NET_ADMIN", "SYS_ADMIN"]
+            add: ["AUDIT_CONTROL", "AUDIT_READ", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
         resources:
           requests:
             memory: "256Mi"
@@ -37,15 +39,7 @@ spec:
             mountPath: /var/run/docker.sock
           - name: hostfs
             mountPath: /threatstackfs
-          - name: ts-config
-            mountPath: /threatstackfs/tmp/ts-config
       volumes:
-        - name: ts-config
-          configMap:
-            name: ts-config
-            items:
-              - key: ts-config.json
-                path: ts-config.json
         - hostPath:
             path: /var/run/docker.sock
           name: dockersocket
