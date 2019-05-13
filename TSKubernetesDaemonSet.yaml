@@ -1,48 +1,156 @@
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata: 
   name: threatstack-agent
-spec:
-  selector:
-    matchLabels:
-      name: "threatstack-agent"
-  template:
-    metadata:
-      labels:
-        name: "threatstack-agent"
-      name: threatstack-agent
-    spec:
+rules: 
+- apiGroups: 
+  - ""
+  resources: 
+  - events
+  - namespaces
+  - pods
+  verbs: 
+  - get
+  - list
+  - watch
+- apiGroups: 
+  - "rbac.authorization.k8s.io"
+  resources: 
+  - clusterroles
+  - clusterrolebindings
+  - roles
+  - rolebindings
+  verbs: 
+  - get
+  - list
+  - watch
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata: 
+  name: threatstack-agent
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: 
+  name: threatstack-agent
+roleRef: 
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: threatstack-agent
+subjects: 
+- kind: ServiceAccount
+  name: threatstack-agent
+  namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: threatstack-agent-master
+spec: 
+  replicas: 1
+  selector: 
+    matchLabels: 
+      name: "threatstack-agent-master"
+  template: 
+    metadata: 
+      labels: 
+        name: "threatstack-agent-master"
+      name: threatstack-agent-master
+    spec: 
+      nodeSelector: 
+        threatstack-master: "true"
       hostNetwork: true
       hostPID: true
-      containers:
-      - image: threatstack/ts-docker2:latest
+      serviceAccountName: threatstack-agent
+      containers: 
+      - image: threatstack/ts-docker2:2.1.0
         imagePullPolicy: Always
         name: threatstack-agent
-        env:
+        env: 
           - name: THREATSTACK_SETUP_ARGS
-            value:  "-deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> -ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
+            value: "-deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> -ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
           - name: THREATSTACK_CONFIG_ARGS
-            value: "enable_kubes 1 enable_containers 1"
-        securityContext:
+            value: "enable_kubes 1 enable_containers 1 enable_kubes_master 1 log.level info"
+        securityContext: 
           privileged: false
-          capabilities:
-            add: ["AUDIT_CONTROL", "AUDIT_READ", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
-        resources:
-          requests:
+          capabilities: 
+            add: ["AUDIT_CONTROL", "AUDIT_READ", "SYS_CHROOT", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
+        resources: 
+          requests: 
             memory: "256Mi"
             cpu: "200m"
-          limits:
+          limits: 
             memory: "256Mi"
             cpu: "200m"
-        volumeMounts:
+        volumeMounts: 
           - name: dockersocket
             mountPath: /var/run/docker.sock
           - name: hostfs
             mountPath: /threatstackfs
-      volumes:
-        - hostPath:
+      volumes: 
+        - hostPath: 
             path: /var/run/docker.sock
           name: dockersocket
-        - hostPath:
+        - hostPath: 
+            path: /
+          name: hostfs
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata: 
+  name: threatstack-agent
+spec: 
+  selector: 
+    matchLabels: 
+      name: "threatstack-agent"
+  template: 
+    metadata: 
+      labels: 
+        name: "threatstack-agent"
+      name: threatstack-agent
+    spec: 
+      affinity: 
+        nodeAffinity: 
+          requiredDuringSchedulingIgnoredDuringExecution: 
+            nodeSelectorTerms: 
+            - matchExpressions: 
+              - key: threatstack-master
+                operator: NotIn
+                values: 
+                - "true"
+      hostNetwork: true
+      hostPID: true
+      containers: 
+      - image: threatstack/ts-docker2:2.1.0
+        imagePullPolicy: Always
+        name: threatstack-agent
+        env: 
+          - name: THREATSTACK_SETUP_ARGS
+            value: "-deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> -ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
+          - name: THREATSTACK_CONFIG_ARGS
+            value: "enable_kubes 1 enable_containers 1 log.level info"
+        securityContext: 
+          privileged: false
+          capabilities: 
+            add: ["AUDIT_CONTROL", "AUDIT_READ", "SYS_CHROOT", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
+        resources: 
+          requests: 
+            memory: "256Mi"
+            cpu: "200m"
+          limits: 
+            memory: "256Mi"
+            cpu: "200m"
+        volumeMounts: 
+          - name: dockersocket
+            mountPath: /var/run/docker.sock
+          - name: hostfs
+            mountPath: /threatstackfs
+      volumes: 
+        - hostPath: 
+            path: /var/run/docker.sock
+          name: dockersocket
+        - hostPath: 
             path: /
           name: hostfs
