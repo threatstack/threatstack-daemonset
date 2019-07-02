@@ -141,7 +141,7 @@ spec:
           - name: containerdsocket
             mountPath: /run/containerd/containerd.sock
           - name: oldcontainerdsocket
-            mountPath: containerdsocket
+            mountPath: /var/run/docker/containerd/docker-containerd.sock
       volumes:
         - hostPath:
             path: /var/run/docker.sock
