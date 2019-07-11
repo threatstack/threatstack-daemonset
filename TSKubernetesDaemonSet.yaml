@@ -46,7 +46,7 @@ subjects:
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
+metadata:
   name: threatstack-agent-master
 spec:
   replicas: 1
@@ -59,8 +59,6 @@ spec:
         name: "threatstack-agent-master"
       name: threatstack-agent-master
     spec:
-      nodeSelector:
-        threatstack-master: "true"
       hostNetwork: true
       hostPID: true
       serviceAccountName: threatstack-agent
