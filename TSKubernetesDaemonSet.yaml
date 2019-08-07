@@ -47,17 +47,17 @@ subjects:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: threatstack-agent-master
+  name: threatstack-agent-kubernetes-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: "threatstack-agent-master"
+      name: "threatstack-agent-kubernetes-api"
   template:
     metadata:
       labels:
-        name: "threatstack-agent-master"
-      name: threatstack-agent-master
+        name: "threatstack-agent-kubernetes-api"
+      name: threatstack-agent-kubernetes-api
     spec:
       hostNetwork: true
       hostPID: true
