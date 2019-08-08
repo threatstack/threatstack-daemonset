@@ -10,6 +10,6 @@ Please contact Threat Stack support. We are not monitoring issues or pull reques
 
 ```
 # with $DEPLOY_KEY set to your organization's deploy key
-sed -i 's/<REPLACE_WITH_VALID_DEPLOY_KEY>/$DEPLOY_KEY/g' TSKubernetesDaemonSet.yaml
+sed -i "s/<REPLACE_WITH_VALID_DEPLOY_KEY>/$DEPLOY_KEY/g" TSKubernetesDaemonSet.yaml
 kubectl apply -f TSKubernetesDaemonSet.yaml
 ```
