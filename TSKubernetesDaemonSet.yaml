@@ -44,6 +44,7 @@ subjects:
   name: threatstack-agent
   namespace: default
 ---
+# Deploys a single agent. Collects events from the Kubernetes API
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -68,7 +69,7 @@ spec:
         name: threatstack-agent
         env:
           - name: THREATSTACK_SETUP_ARGS
-            value: "-deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> -ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
+            value: "--deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> --ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
           - name: THREATSTACK_CONFIG_ARGS
             value: "enable_kubes 1 enable_containers 1 enable_kubes_master 1 log.level info"
         securityContext:
@@ -95,6 +96,7 @@ spec:
             path: /
           name: hostfs
 ---
+# Deploys our agent to all nodes in the cluster. Collects all events except for Kubernetes events. Audit, file, login, etc.
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -117,7 +119,7 @@ spec:
         name: threatstack-agent
         env:
           - name: THREATSTACK_SETUP_ARGS
-            value: "-deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> -ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
+            value: "--deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> --ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
           - name: THREATSTACK_CONFIG_ARGS
             value: "enable_kubes 1 enable_containers 1 log.level info"
         securityContext:
