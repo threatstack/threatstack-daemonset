@@ -64,7 +64,7 @@ spec:
       hostPID: true
       serviceAccountName: threatstack-agent
       containers:
-      - image: threatstack/ts-docker2:2.1.1
+      - image: threatstack/ts-docker2:2.1.2
         imagePullPolicy: Always
         name: threatstack-agent
         env:
@@ -114,7 +114,7 @@ spec:
       hostNetwork: true
       hostPID: true
       containers:
-      - image: threatstack/ts-docker2:2.1.1
+      - image: threatstack/ts-docker2:2.1.2
         imagePullPolicy: Always
         name: threatstack-agent
         env:
