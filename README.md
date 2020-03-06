@@ -1,6 +1,8 @@
-# Threat Stack Kubernetes Deployment Yaml
+# Threat Stack Kubernetes Deployment Yamls
 
-This file is a template for deploying the Threat Stack agent on Kubernetes. This is meant as a base to build off of. Users may wish to change the namespace, the resource limits, etc.
+These files are templates for deploying the Threat Stack agent on Kubernetes. This is meant as a base to build customer-specific orchestration of the Threat Stack agent. Users may wish to change the namespace, the resource limits, etc.
+
+The `TSGKEDaemonSet.yaml` has some small modifications for the template to work more seamlessly with GKE kubernetes clusters.
 
 ## Questions?
 
