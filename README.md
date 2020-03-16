@@ -2,7 +2,9 @@
 
 These files are templates for deploying the Threat Stack agent on Kubernetes. This is meant as a base to build customer-specific orchestration of the Threat Stack agent. Users may wish to change the namespace, the resource limits, etc.
 
-The `TSGKEDaemonSet.yaml` has some small modifications for the template to work more seamlessly with GKE kubernetes clusters.
+The `TSGKEContainerOsDaemonSet.yaml` has some small modifications for the template to work more seamlessly with GKE kubernetes clusters with ContainerOS nodes.
+
+The `TSGKEUbuntuDaemonSet.yaml` has some small modifications for the template to work more seamlessly with GKE kubernetes clusters with Ubuntu nodes.
 
 ## Questions?
 

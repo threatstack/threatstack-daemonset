@@ -1,0 +1,159 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: threatstack-agent
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  - namespaces
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - "rbac.authorization.k8s.io"
+  resources:
+  - clusterroles
+  - clusterrolebindings
+  - roles
+  - rolebindings
+  verbs:
+  - get
+  - list
+  - watch
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: threatstack-agent
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: threatstack-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: threatstack-agent
+subjects:
+- kind: ServiceAccount
+  name: threatstack-agent
+  namespace: default
+---
+# Deploys a single agent. Collects events from the Kubernetes API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: threatstack-agent-kubernetes-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: "threatstack-agent-kubernetes-api"
+  template:
+    metadata:
+      labels:
+        name: "threatstack-agent-kubernetes-api"
+      name: threatstack-agent-kubernetes-api
+    spec:
+      hostNetwork: true
+      hostPID: true
+      serviceAccountName: threatstack-agent
+      containers:
+      - image: threatstack/ts-docker2:2.2.0
+        imagePullPolicy: Always
+        name: threatstack-agent
+        env:
+          - name: THREATSTACK_SETUP_ARGS
+            value: "--deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> --ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
+          - name: THREATSTACK_CONFIG_ARGS
+            value: "enable_kubes 1 enable_containers 1 enable_kubes_master 1 log.level info"
+        securityContext:
+          privileged: false
+          capabilities:
+            add: ["AUDIT_CONTROL", "AUDIT_READ", "SYS_CHROOT", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        volumeMounts:
+          - name: dockersocket
+            mountPath: /var/run/docker.sock
+          - name: hostfs
+            mountPath: /threatstackfs
+      volumes:
+        - hostPath:
+            path: /var/run/docker.sock
+          name: dockersocket
+        - hostPath:
+            path: /
+          name: hostfs
+---
+# Deploys our agent to all nodes in the cluster. Collects all events except for Kubernetes events. Audit, file, login, etc.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: threatstack-agent
+spec:
+  selector:
+    matchLabels:
+      name: "threatstack-agent"
+  template:
+    metadata:
+      labels:
+        name: "threatstack-agent"
+      name: threatstack-agent
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - image: threatstack/ts-docker2:2.2.0
+        imagePullPolicy: Always
+        name: threatstack-agent
+        command: ["bash"]
+        args: ["-c", "chroot /threatstackfs /bin/bash -c 'systemctl stop auditd; systemctl disable auditd'; eval tsagent setup $THREATSTACK_SETUP_ARGS; eval tsagent config --set $THREATSTACK_CONFIG_ARGS; sleep 5; /opt/threatstack/sbin/tsagentd -logstdout"]
+        env:
+          - name: THREATSTACK_SETUP_ARGS
+            value: "--deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> --ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
+          - name: THREATSTACK_CONFIG_ARGS
+            value: "enable_kubes 1 enable_containers 1 log.level info"
+        securityContext:
+          privileged: false
+          capabilities:
+            add: ["AUDIT_CONTROL", "AUDIT_READ", "SYS_CHROOT", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        volumeMounts:
+          - name: dockersocket
+            mountPath: /var/run/docker.sock
+          - name: hostfs
+            mountPath: /threatstackfs
+          - name: containerdsocket
+            mountPath: /run/containerd/containerd.sock
+          - name: oldcontainerdsocket
+            mountPath: /var/run/docker/containerd/docker-containerd.sock
+      volumes:
+        - hostPath:
+            path: /var/run/docker.sock
+          name: dockersocket
+        - hostPath:
+            path: /run/containerd/containerd.sock
+          name: containerdsocket
+        - hostPath:
+            path: /var/run/docker/containerd/docker-containerd.sock
+          name: oldcontainerdsocket
+        - hostPath:
+            path: /
+          name: hostfs
