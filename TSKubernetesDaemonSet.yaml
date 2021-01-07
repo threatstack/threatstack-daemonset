@@ -71,7 +71,7 @@ spec:
           - name: THREATSTACK_SETUP_ARGS
             value: "--deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> --ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
           - name: THREATSTACK_CONFIG_ARGS
-            value: "enable_kubes 1 enable_containers 1 enable_kubes_master 1 log.level info"
+            value: "enable_kubes 1 enable_kubes_master 1 log.level info"
         securityContext:
           privileged: false
           capabilities:
