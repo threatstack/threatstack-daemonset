@@ -75,7 +75,7 @@ spec:
         securityContext:
           privileged: false
           capabilities:
-            add: ["AUDIT_CONTROL", "AUDIT_READ", "SYS_CHROOT", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
+            add: ["AUDIT_CONTROL", "SYS_CHROOT", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
         resources:
           requests:
             memory: "256Mi"
