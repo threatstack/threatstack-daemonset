@@ -64,7 +64,7 @@ spec:
       hostPID: true
       serviceAccountName: threatstack-agent
       containers:
-      - image: threatstack/ts-docker2:2.3.0
+      - image: threatstack/ts-docker2:2.3.1
         imagePullPolicy: Always
         name: threatstack-agent
         env:
@@ -114,7 +114,7 @@ spec:
       hostNetwork: true
       hostPID: true
       containers:
-      - image: threatstack/ts-docker2:2.3.0
+      - image: threatstack/ts-docker2:2.3.1
         imagePullPolicy: Always
         name: threatstack-agent
         env:
@@ -123,7 +123,7 @@ spec:
           - name: THREATSTACK_CONFIG_ARGS
             value: "enable_kubes 1 enable_containers 1 log.level info"
         securityContext:
-          privileged: false
+          privileged: true
           capabilities:
             add: ["AUDIT_CONTROL", "AUDIT_READ", "SYS_CHROOT", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
         resources:
