@@ -75,7 +75,7 @@ spec:
         securityContext:
           privileged: false
           capabilities:
-            add: ["AUDIT_CONTROL", "SYS_CHROOT", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
+            add: ["AUDIT_CONTROL", "SYS_ADMIN", "SYS_PTRACE"]
         resources:
           requests:
             memory: "256Mi"
@@ -107,6 +107,8 @@ spec:
       name: "threatstack-agent"
   template:
     metadata:
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/threatstack-agent: unconfined
       labels:
         name: "threatstack-agent"
       name: threatstack-agent
@@ -123,9 +125,9 @@ spec:
           - name: THREATSTACK_CONFIG_ARGS
             value: "enable_kubes 1 enable_containers 1 log.level info"
         securityContext:
-          privileged: true
+          privileged: false
           capabilities:
-            add: ["AUDIT_CONTROL", "SYS_CHROOT", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
+            add: ["AUDIT_CONTROL", "SYS_ADMIN", "SYS_PTRACE"]
         resources:
           requests:
             memory: "256Mi"
