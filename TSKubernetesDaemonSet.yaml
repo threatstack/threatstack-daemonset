@@ -64,7 +64,7 @@ spec:
       hostPID: true
       serviceAccountName: threatstack-agent
       containers:
-      - image: threatstack/ts-docker2:2.3.1
+      - image: threatstack/ts-docker2:2.3.2
         imagePullPolicy: Always
         name: threatstack-agent
         env:
@@ -75,7 +75,7 @@ spec:
         securityContext:
           privileged: false
           capabilities:
-            add: ["AUDIT_CONTROL", "SYS_CHROOT", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
+            add: ["AUDIT_CONTROL", "SYS_ADMIN", "SYS_PTRACE"]
         resources:
           requests:
             memory: "256Mi"
@@ -107,6 +107,8 @@ spec:
       name: "threatstack-agent"
   template:
     metadata:
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/threatstack-agent: unconfined
       labels:
         name: "threatstack-agent"
       name: threatstack-agent
@@ -114,7 +116,7 @@ spec:
       hostNetwork: true
       hostPID: true
       containers:
-      - image: threatstack/ts-docker2:2.3.1
+      - image: threatstack/ts-docker2:2.3.2
         imagePullPolicy: Always
         name: threatstack-agent
         env:
@@ -123,9 +125,9 @@ spec:
           - name: THREATSTACK_CONFIG_ARGS
             value: "enable_kubes 1 enable_containers 1 log.level info"
         securityContext:
-          privileged: true
+          privileged: false
           capabilities:
-            add: ["AUDIT_CONTROL", "SYS_CHROOT", "CHOWN","DAC_OVERRIDE", "DAC_READ_SEARCH", "FOWNER", "FSETID", "SETGID", "SETUID", "SYS_ADMIN", "SYS_PTRACE"]
+            add: ["AUDIT_CONTROL", "SYS_ADMIN", "SYS_PTRACE"]
         resources:
           requests:
             memory: "256Mi"
