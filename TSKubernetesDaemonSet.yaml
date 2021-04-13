@@ -75,7 +75,7 @@ spec:
         securityContext:
           privileged: false
           capabilities:
-            add: ["AUDIT_CONTROL", "SYS_ADMIN", "SYS_PTRACE"]
+            add: ["AUDIT_CONTROL", "SYS_ADMIN", "SYS_PTRACE", "SYS_NICE"]
         resources:
           requests:
             memory: "256Mi"
@@ -127,7 +127,7 @@ spec:
         securityContext:
           privileged: false
           capabilities:
-            add: ["AUDIT_CONTROL", "SYS_ADMIN", "SYS_PTRACE"]
+            add: ["AUDIT_CONTROL", "SYS_ADMIN", "SYS_PTRACE", "SYS_NICE"]
         resources:
           requests:
             memory: "256Mi"
