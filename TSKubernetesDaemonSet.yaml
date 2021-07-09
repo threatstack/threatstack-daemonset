@@ -64,7 +64,7 @@ spec:
       hostPID: true
       serviceAccountName: threatstack-agent
       containers:
-      - image: threatstack/ts-docker2:2.3.3
+      - image: threatstack/ts-docker2:2.3.4
         imagePullPolicy: Always
         name: threatstack-agent
         env:
@@ -116,9 +116,17 @@ spec:
       hostNetwork: true
       hostPID: true
       containers:
-      - image: threatstack/ts-docker2:2.3.3
+      - image: threatstack/ts-docker2:2.3.4
         imagePullPolicy: Always
         name: threatstack-agent
+        livenessProbe:
+          exec:
+            command: [ "sh", "-c", "tsagent status" ]
+          initialDelaySeconds: 15
+          periodSeconds: 60
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 5
         env:
           - name: THREATSTACK_SETUP_ARGS
             value: "--deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> --ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
