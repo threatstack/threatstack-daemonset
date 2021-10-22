@@ -64,14 +64,14 @@ spec:
       hostPID: true
       serviceAccountName: threatstack-agent
       containers:
-      - image: threatstack/ts-docker2:2.3.4
+      - image: threatstack/ts-docker2:2.4.0
         imagePullPolicy: Always
         name: threatstack-agent
         livenessProbe:
           exec:
             command: [ "sh", "-c", "tsagent status" ]
           initialDelaySeconds: 15
-          periodSeconds: 60
+          periodSeconds: 360
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 5
@@ -124,14 +124,14 @@ spec:
       hostNetwork: true
       hostPID: true
       containers:
-      - image: threatstack/ts-docker2:2.3.4
+      - image: threatstack/ts-docker2:2.4.0
         imagePullPolicy: Always
         name: threatstack-agent
         livenessProbe:
           exec:
             command: [ "sh", "-c", "tsagent status" ]
           initialDelaySeconds: 15
-          periodSeconds: 60
+          periodSeconds: 360
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 5
