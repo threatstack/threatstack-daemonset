@@ -92,14 +92,9 @@ spec:
             memory: "512Mi"
             cpu: "400m"
         volumeMounts:
-          - name: dockersocket
-            mountPath: /var/run/docker.sock
           - name: hostfs
             mountPath: /threatstackfs
       volumes:
-        - hostPath:
-            path: /var/run/docker.sock
-          name: dockersocket
         - hostPath:
             path: /
           name: hostfs
@@ -152,24 +147,9 @@ spec:
             memory: "512Mi"
             cpu: "400m"
         volumeMounts:
-          - name: dockersocket
-            mountPath: /var/run/docker.sock
           - name: hostfs
             mountPath: /threatstackfs
-          - name: containerdsocket
-            mountPath: /run/containerd/containerd.sock
-          - name: oldcontainerdsocket
-            mountPath: /var/run/docker/containerd/docker-containerd.sock
       volumes:
-        - hostPath:
-            path: /var/run/docker.sock
-          name: dockersocket
-        - hostPath:
-            path: /run/containerd/containerd.sock
-          name: containerdsocket
-        - hostPath:
-            path: /var/run/docker/containerd/docker-containerd.sock
-          name: oldcontainerdsocket
         - hostPath:
             path: /
           name: hostfs
