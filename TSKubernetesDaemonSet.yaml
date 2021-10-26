@@ -64,14 +64,14 @@ spec:
       hostPID: true
       serviceAccountName: threatstack-agent
       containers:
-      - image: threatstack/ts-docker2:2.3.4
+      - image: threatstack/ts-docker2:2.4.0
         imagePullPolicy: Always
         name: threatstack-agent
         livenessProbe:
           exec:
             command: [ "sh", "-c", "tsagent status" ]
           initialDelaySeconds: 15
-          periodSeconds: 60
+          periodSeconds: 360
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 5
@@ -92,14 +92,9 @@ spec:
             memory: "512Mi"
             cpu: "400m"
         volumeMounts:
-          - name: dockersocket
-            mountPath: /var/run/docker.sock
           - name: hostfs
             mountPath: /threatstackfs
       volumes:
-        - hostPath:
-            path: /var/run/docker.sock
-          name: dockersocket
         - hostPath:
             path: /
           name: hostfs
@@ -124,14 +119,14 @@ spec:
       hostNetwork: true
       hostPID: true
       containers:
-      - image: threatstack/ts-docker2:2.3.4
+      - image: threatstack/ts-docker2:2.4.0
         imagePullPolicy: Always
         name: threatstack-agent
         livenessProbe:
           exec:
             command: [ "sh", "-c", "tsagent status" ]
           initialDelaySeconds: 15
-          periodSeconds: 60
+          periodSeconds: 360
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 5
@@ -139,7 +134,7 @@ spec:
           - name: THREATSTACK_SETUP_ARGS
             value: "--deploy-key <REPLACE_WITH_VALID_DEPLOY_KEY> --ruleset 'Base Rule Set, Docker Rule Set, Kubernetes Rule Set'"
           - name: THREATSTACK_CONFIG_ARGS
-            value: "enable_kubes 1 enable_containers 1 log.level info"
+            value: "enable_kubes 1 log.level info"
         securityContext:
           privileged: false
           capabilities:
@@ -152,24 +147,9 @@ spec:
             memory: "512Mi"
             cpu: "400m"
         volumeMounts:
-          - name: dockersocket
-            mountPath: /var/run/docker.sock
           - name: hostfs
             mountPath: /threatstackfs
-          - name: containerdsocket
-            mountPath: /run/containerd/containerd.sock
-          - name: oldcontainerdsocket
-            mountPath: /var/run/docker/containerd/docker-containerd.sock
       volumes:
-        - hostPath:
-            path: /var/run/docker.sock
-          name: dockersocket
-        - hostPath:
-            path: /run/containerd/containerd.sock
-          name: containerdsocket
-        - hostPath:
-            path: /var/run/docker/containerd/docker-containerd.sock
-          name: oldcontainerdsocket
         - hostPath:
             path: /
           name: hostfs
