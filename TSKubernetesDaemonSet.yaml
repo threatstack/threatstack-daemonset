@@ -138,7 +138,7 @@ spec:
         securityContext:
           privileged: false
           capabilities:
-            add: ["AUDIT_CONTROL", "SYS_ADMIN", "SYS_PTRACE", "SYS_NICE"]
+            add: ["AUDIT_CONTROL", "SYS_ADMIN", "SYS_PTRACE", "SYS_NICE", "SYS_RESOURCE", "IPC_LOCK"]
         resources:
           requests:
             memory: "256Mi"
@@ -149,7 +149,22 @@ spec:
         volumeMounts:
           - name: hostfs
             mountPath: /threatstackfs
+          - name: kernel-debug
+            mountPath: /sys/kernel/debug
+          - name: cgroup
+            mountPath: /sys/fs/cgroup
+          - name: bpf
+            mountPath: /sys/fs/bpf
       volumes:
         - hostPath:
             path: /
           name: hostfs
+        - hostPath:
+            path: /sys/kernel/debug
+          name: kernel-debug
+        - hostPath:
+            path: /sys/fs/cgroup
+          name: cgroup
+        - hostPath:
+            path: /sys/fs/bpf
+          name: bpf
