@@ -94,6 +94,7 @@ spec:
         volumeMounts:
           - name: hostfs
             mountPath: /threatstackfs
+            readOnly: true
       volumes:
         - hostPath:
             path: /
@@ -149,12 +150,9 @@ spec:
         volumeMounts:
           - name: hostfs
             mountPath: /threatstackfs
+            readOnly: true
           - name: kernel-debug
             mountPath: /sys/kernel/debug
-          - name: cgroup
-            mountPath: /sys/fs/cgroup
-          - name: bpf
-            mountPath: /sys/fs/bpf
       volumes:
         - hostPath:
             path: /
@@ -162,9 +160,3 @@ spec:
         - hostPath:
             path: /sys/kernel/debug
           name: kernel-debug
-        - hostPath:
-            path: /sys/fs/cgroup
-          name: cgroup
-        - hostPath:
-            path: /sys/fs/bpf
-          name: bpf
