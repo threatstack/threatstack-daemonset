@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2022 F5, Inc.
+# Copyright (c) 2018-2023 F5, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -84,8 +84,7 @@ spec:
       hostPID: true
       serviceAccountName: threatstack-agent
       containers:
-      - image: threatstack/ts-docker2:3.1.1
-        imagePullPolicy: Always
+      - image: threatstack/ts-docker2:3.2.0
         name: threatstack-agent
         livenessProbe:
           exec:
@@ -132,7 +131,7 @@ spec:
       hostNetwork: true
       hostPID: true
       containers:
-      - image: threatstack/ts-docker2:3.1.1
+      - image: threatstack/ts-docker2:3.2.0
         imagePullPolicy: Always
         name: threatstack-agent
         livenessProbe:
