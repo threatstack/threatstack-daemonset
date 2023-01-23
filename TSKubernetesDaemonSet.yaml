@@ -85,6 +85,7 @@ spec:
       serviceAccountName: threatstack-agent
       containers:
       - image: threatstack/ts-docker2:3.2.0
+        imagePullPolicy: Always
         name: threatstack-agent
         livenessProbe:
           exec:
